@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StyleSheet, Button, View, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import * as Location from 'expo-location';
+
 
 export default function App() {
 
@@ -8,9 +10,26 @@ export default function App() {
   const [coordinates, setCoordinates] = useState({
     latitude: 60.1674881,
     longitude: 24.9427473,
-    latitudeDelta: 0.0322,
-    longitudeDelta: 0.0221,
-  })
+    latitudeDelta: 0.05,
+    longitudeDelta: 0.05,
+  });
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync({});
+      console.log("Your latitude: " + location.coords.latitude);
+      console.log("Your longitude: " + location.coords.longitude);
+      setCoordinates({
+        ...coordinates,
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      })
+    })();
+  }, []);
 
   const apiKey = process.env.EXPO_PUBLIC_API_KEY;
   const URI = `https://geocode.maps.co/search?q=${query}&api_key=${apiKey}`
@@ -21,16 +40,15 @@ export default function App() {
       .then(response => response.json())
       .then(data => {
         setCoordinates({
+          ...coordinates,
           latitude: Number(data[0].lat),
           longitude: Number(data[0].lon),
-          latitudeDelta: 0.0322,
-          longitudeDelta: 0.0221,
         });
       })
   }
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
