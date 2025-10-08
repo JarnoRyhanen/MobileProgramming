@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Button, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList } from 'react-native';
 import { app } from './firebaseConfig';
 import { getDatabase, ref, push, onValue, remove } from "firebase/database";
+import { Input, Button, Icon, ListItem, Header } from '@rneui/themed';
 
 export default function App() {
 
@@ -32,9 +33,11 @@ export default function App() {
     if (product.amount && product.product) {
       push(ref(database, 'items/'), product);
       setProduct({ product: "", amount: "" });
+      console.log("OLEN TÄÄLLÄ");
+      
     }
     else {
-      alert("Error", "Type product and amount first");
+      alert("Type product and amount first");
     }
   };
 
@@ -46,37 +49,48 @@ export default function App() {
   return (
     <View style={styles.container}>
 
-      <TextInput
-        style={styles.textInput}
-        placeholder='Product'
-        onChangeText={(productValue) => setProduct({ ...product, product: productValue })}
-        value={product.product}
+      <Header
+        barStyle="default"
+        centerComponent={{
+          text: "Shopping list",
+          style: { color: "#fff" }
+        }}
+        containerStyle={{ width: "auto", height: 50 }}
+        placement="center"
       />
-      <TextInput
-        style={styles.textInput}
-        placeholder='Amount'
-        onChangeText={(amountValue) => setProduct({ ...product, amount: amountValue })}
-        value={product.amount}
-      />
-      <View style={{ flexDirection: "row", margin: 10 }}>
-        <Button
-          title='save'
-          onPress={() => saveItem()}
-        />
-      </View>
 
-      <Text style={{ fontWeight: "bold", margin: 20 }}>Shopping list</Text>
+      <Input
+        label="PRODUCT"
+        placeholder='Product'
+        value={product.product}
+        onChangeText={(productValue) => setProduct({ ...product, product: productValue })}
+      />
+      <Input
+        label="AMOUNT"
+        placeholder='Amount'
+        value={product.amount}
+        onChangeText={(amountValue) => setProduct({ ...product, amount: amountValue })}
+      />
+
+      <Button radius={"sm"} type="solid" onPress={() => saveItem()}>
+        Save
+        <Icon name="Save" type='material' color="white" />
+      </Button>
 
       <FlatList
-        keyExtractor={item => item.id}
-        renderItem={({ item }) =>
-          <View style={{ width: "80%", flexDirection: 'row' }}>
-            <Text>{item.product}, </Text>
-            <Text>{item.amount}  </Text>
-            <Text style={{ color: 'blue' }} onPress={() => deleteItem(item.id)}>Delete</Text>
-          </View>
-        }
+        contentContainerStyle={{ paddingBottom: 40 }}
         data={products}
+        keyExtractor={item => item.id}
+        ListEmptyComponent={<Text style={{ textAlign: 'center', padding: 12 }}>No items</Text>}
+        renderItem={({ item }) =>
+          <ListItem bottomDivider>
+            <ListItem.Content>
+              <ListItem.Title>{item.product}</ListItem.Title>
+              <ListItem.Subtitle>{item.amount}</ListItem.Subtitle>
+            </ListItem.Content>
+            <Icon name="Delete" type='material' color="red" onPress={() => deleteItem(item.id)} />
+          </ListItem>
+        }
       />
 
     </View>
@@ -86,16 +100,10 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 200,
+    marginTop: 40,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  textInput: {
-    border: 1,
-    margin: 4,
-    borderWidth: 1,
-    borderColor: "Gray",
-    width: "60%"
+    alignItems: 'stretch',
+    justifyContent: 'flex-start',
+    paddingHorizontal: 12,
   }
 });
