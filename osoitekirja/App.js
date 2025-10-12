@@ -1,26 +1,19 @@
-import { app } from './firebaseConfig';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
-import { getDatabase, ref, push } from "firebase/database";
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import MyPlacesScreen from './components/MyPlacesScreen';
+import MapScreen from './components/MapScreen';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
 
-  const database = getDatabase(app);
-
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working something</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="My Places" component={MyPlacesScreen} />
+        <Stack.Screen name="Map" component={MapScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
