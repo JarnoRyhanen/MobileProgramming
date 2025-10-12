@@ -1,7 +1,7 @@
 import { app } from '../firebaseConfig';
 import { getDatabase, ref, push, onValue, remove } from "firebase/database";
-import { StyleSheet, Text, View, FlatList, Alert } from 'react-native';
-import { Input, Button, ListItem } from '@rneui/themed';
+import { StyleSheet, View, FlatList, Alert } from 'react-native';
+import { Input, Button, ListItem, Text } from '@rneui/themed';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 
@@ -70,7 +70,11 @@ export default function MyPlacesScreen({ navigation }) {
                 keyExtractor={item => item.id}
                 ListEmptyComponent={<Text style={{ textAlign: 'center', padding: 12, fontSize: 20 }}>No addresses</Text>}
                 renderItem={({ item }) =>
-                    <ListItem bottomDivider onLongPress={() => deleteItem(item.id)}>
+                    <ListItem
+                        bottomDivider
+                        onLongPress={() => deleteItem(item.id)}
+                        onPress={() => navigation.navigate('Map', { address: item.value })}
+                    >
                         <ListItem.Content>
                             <ListItem.Title
                                 style={styles.address}
@@ -89,7 +93,7 @@ export default function MyPlacesScreen({ navigation }) {
                     </ListItem>
                 }
             />
-        </View >
+        </View>
     );
 }
 
