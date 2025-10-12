@@ -1,5 +1,5 @@
 import { app } from '../firebaseConfig';
-import { getDatabase, ref, push, onValue } from "firebase/database";
+import { getDatabase, ref, push, onValue, remove } from "firebase/database";
 import { StyleSheet, Text, View, FlatList, Alert } from 'react-native';
 import { Input, Button, ListItem } from '@rneui/themed';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -20,7 +20,12 @@ export default function MyPlacesScreen({ navigation }) {
         else {
             Alert.alert("Error", "Type address first");
         }
-    }
+    };
+
+    const deleteItem = (id) => {
+        console.log("Deleting item with id:", id);
+        remove(ref(database, `items/${id}`));
+    };
 
     useEffect(() => {
         const itemsRef = ref(database, 'items/');
@@ -65,7 +70,7 @@ export default function MyPlacesScreen({ navigation }) {
                 keyExtractor={item => item.id}
                 ListEmptyComponent={<Text style={{ textAlign: 'center', padding: 12, fontSize: 20 }}>No addresses</Text>}
                 renderItem={({ item }) =>
-                    <ListItem bottomDivider>
+                    <ListItem bottomDivider onLongPress={() => deleteItem(item.id)}>
                         <ListItem.Content>
                             <ListItem.Title
                                 style={styles.address}
@@ -84,7 +89,6 @@ export default function MyPlacesScreen({ navigation }) {
                     </ListItem>
                 }
             />
-
         </View >
     );
 }
